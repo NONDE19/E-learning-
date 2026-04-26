@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Learning Platform</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- LOGIN PAGE -->
+    <div id="loginPage" class="page active">
+        <div class="login-container">
+            <div class="login-box">
+                <h1>E-Learning Platform</h1>
+                <p>Master Your Skills Online</p>
+                
+                <form id="loginForm" onsubmit="handleLogin(event)">
+                    <input type="email" id="email" placeholder="Email" required>
+                    <input type="password" id="password" placeholder="Password" required>
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
+
+                <div class="demo-section">
+                    <p>Try Demo Accounts:</p>
+                    <button class="btn btn-secondary" onclick="setDemoStudent()">Login as Student</button>
+                    <button class="btn btn-secondary" onclick="setDemoAdmin()">Login as Admin</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- STUDENT PORTAL -->
+    <div id="studentPage" class="page">
+        <nav class="navbar">
+            <div class="logo">EduLearn</div>
+            <div class="user-info">
+                <span>Welcome, <strong id="studentName"></strong></span>
+                <button class="btn btn-danger" onclick="logout()">Logout</button>
+            </div>
+        </nav>
+
+        <div class="container">
+            <div class="sidebar">
+                <div class="menu">
+                    <div class="menu-item active" onclick="switchStudentTab('dashboard')">📊 Dashboard</div>
+                    <div class="menu-item" onclick="switchStudentTab('courses')">📚 Available Courses</div>
+                    <div class="menu-item" onclick="switchStudentTab('my-courses')">⭐ My Courses</div>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <!-- Dashboard Tab -->
+                <div id="dashboardTab" class="tab-content active">
+                    <h2>Dashboard</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Courses Enrolled</h3>
+                            <p id="enrolledCount">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Courses Completed</h3>
+                            <p id="completedCount">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Hours Learned</h3>
+                            <p id="hoursLearned">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Average Progress</h3>
+                            <p id="avgProgress">0%</p>
+                        </div>
+                    </div>
+
+                    <h3 style="margin-top: 30px;">Your Recent Courses</h3>
+                    <div id="recentCourses" class="courses-grid"></div>
+                </div>
+
+                <!-- Available Courses Tab -->
+                <div id="coursesTab" class="tab-content">
+                    <h2>Available Courses</h2>
+                    <div class="search-filters">
+                        <input type="text" id="searchCourse" placeholder="Search courses..." onkeyup="filterCourses()">
+                        <select id="levelFilter" onchange="filterCourses()">
+                            <option value="">All Levels</option>
+                            <option value="Beginner">Beginner</option>
+                            <option value="Intermediate">Intermediate</option>
+                            <option value="Advanced">Advanced</option>
+                        </select>
+                    </div>
+                    <div id="availableCourses" class="courses-grid"></div>
+                </div>
+
+                <!-- My Courses Tab -->
+                <div id="my-coursesTab" class="tab-content">
+                    <h2>My Courses</h2>
+                    <div id="myCourses" class="courses-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- COURSE DETAILS MODAL -->
+    <div id="courseModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCourseModal()">&times;</span>
+            <h2>Course Details</h2>
+            <div id="courseDetails"></div>
+            <button id="enrollBtn" class="btn btn-primary" onclick="enrollCourse()">Enroll Now</button>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="adminPage" class="page">
+        <nav class="navbar">
+            <div class="logo">EduLearn Admin</div>
+            <div class="user-info">
+                <span>Welcome, <strong id="adminName"></strong></span>
+                <button class="btn btn-danger" onclick="logout()">Logout</button>
+            </div>
+        </nav>
+
+        <div class="admin-container">
+            <div class="admin-sidebar">
+                <div class="menu-item active" onclick="switchAdminTab('dashboard')">📊 Dashboard</div>
+                <div class="menu-item" onclick="switchAdminTab('courses')">📚 Courses</div>
+                <div class="menu-item" onclick="switchAdminTab('users')">👥 Users</div>
+                <div class="menu-item" onclick="switchAdminTab('enrollments')">📝 Enrollments</div>
+                <div class="menu-item" onclick="switchAdminTab('reports')">📈 Reports</div>
+            </div>
+
+            <div class="admin-main">
+                <!-- Dashboard Tab -->
+                <div id="adminDashboard" class="admin-tab active">
+                    <h2>Admin Dashboard</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <h3>Total Users</h3>
+                            <p id="totalUsers">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Total Courses</h3>
+                            <p id="totalCourses">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Total Enrollments</h3>
+                            <p id="totalEnrollments">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Total Revenue</h3>
+                            <p id="totalRevenue">$0</p>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid" style="margin-top: 20px;">
+                        <div class="stat-card">
+                            <h3>Active Users</h3>
+                            <p id="activeUsers">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Inactive Users</h3>
+                            <p id="inactiveUsers">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Avg Student Progress</h3>
+                            <p id="avgStudentProgress">0%</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Top Course</h3>
+                            <p id="topCourseEnrollments">-</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Courses Tab -->
+                <div id="adminCourses" class="admin-tab">
+                    <div class="tab-header">
+                        <h2>Manage Courses</h2>
+                        <button class="btn btn-primary" onclick="openCourseModal()">+ Add Course</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Course Name</th>
+                                <th>Instructor</th>
+                                <th>Price</th>
+                                <th>Students</th>
+                                <th>Level</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="coursesList"></tbody>
+                    </table>
+                </div>
+
+                <!-- Users Tab -->
+                <div id="adminUsers" class="admin-tab">
+                    <div class="tab-header">
+                        <h2>Manage Users</h2>
+                        <button class="btn btn-primary" onclick="openUserModal()">+ Add User</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Joined</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersList"></tbody>
+                    </table>
+                </div>
+
+                <!-- Enrollments Tab -->
+                <div id="adminEnrollments" class="admin-tab">
+                    <div class="tab-header">
+                        <h2>Manage Enrollments</h2>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Course</th>
+                                <th>Progress</th>
+                                <th>Status</th>
+                                <th>Enrolled Date</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="enrollmentsList"></tbody>
+                    </table>
+                </div>
+
+                <!-- Reports Tab -->
+                <div id="adminReports" class="admin-tab">
+                    <h2>Reports & Analytics</h2>
+                    
+                    <h3>Course Performance</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Enrollments</th>
+                                <th>Avg Progress</th>
+                                <th>Completion Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody id="coursePerformance"></tbody>
+                    </table>
+
+                    <h3 style="margin-top: 30px;">Student Engagement</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Enrollments</th>
+                                <th>Avg Progress</th>
+                                <th>Total Hours</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentEngagement"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD/EDIT COURSE MODAL -->
+    <div id="addCourseModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddCourseModal()">&times;</span>
+            <h2 id="courseFormTitle">Add Course</h2>
+            <form id="courseForm" onsubmit="saveCourse(event)">
+                <input type="text" id="courseName" placeholder="Course Name" required>
+                <input type="text" id="courseInstructor" placeholder="Instructor Name" required>
+                <input type="number" id="coursePrice" placeholder="Price ($)" step="0.01" required>
+                <input type="number" id="courseDuration" placeholder="Duration (hours)" required>
+                <select id="courseLevel" required>
+                    <option value="">Select Level</option>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Intermediate">Intermediate</option>
+                    <option value="Advanced">Advanced</option>
+                </select>
+                <textarea id="courseDescription" placeholder="Description" required></textarea>
+                <textarea id="courseCurriculum" placeholder="Curriculum (comma-separated items)" required></textarea>
+                <button type="submit" class="btn btn-primary">Save Course</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADD/EDIT USER MODAL -->
+    <div id="addUserModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddUserModal()">&times;</span>
+            <h2 id="userFormTitle">Add User</h2>
+            <form id="userForm" onsubmit="saveUser(event)">
+                <input type="text" id="userName" placeholder="Full Name" required>
+                <input type="email" id="userEmail" placeholder="Email" required>
+                <input type="password" id="userPassword" placeholder="Password" required>
+                <select id="userRole" required>
+                    <option value="">Select Role</option>
+                    <option value="Student">Student</option>
+                    <option value="Instructor">Instructor</option>
+                    <option value="Admin">Admin</option>
+                </select>
+                <select id="userStatus" required>
+                    <option value="">Select Status</option>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Save User</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- EDIT PROGRESS MODAL -->
+    <div id="editProgressModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditProgressModal()">&times;</span>
+            <h2>Update Student Progress</h2>
+            <form onsubmit="saveProgress(event)">
+                <label>Progress Percentage (0-100):</label>
+                <input type="number" id="progressValue" min="0" max="100" required>
+                <button type="submit" class="btn btn-primary">Save Progress</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize student/admin names
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new MutationObserver(function(mutations) {
+                if (database.currentUser) {
+                    const studentName = document.getElementById('studentName');
+                    const adminName = document.getElementById('adminName');
+                    if (studentName) studentName.textContent = database.currentUser.name;
+                    if (adminName) adminName.textContent = database.currentUser.name;
+                }
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
+    </script>
+    <script src="app.js"></script>
+</body>
+                      </html>
